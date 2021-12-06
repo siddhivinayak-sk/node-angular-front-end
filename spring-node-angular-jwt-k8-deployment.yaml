@@ -38,7 +38,7 @@ spec:
         #image: hub.docker.local:5000/alpine-jre-8:latest
         #command: ["java", "-version"]
       #containers:
-      - name: spring-boot-jwt
+      - name: spring-node-angular-jwt
         image: hub.docker.local:5000/spring/spring-node-angular-jwt:latest
 
         imagePullPolicy: "Always"
