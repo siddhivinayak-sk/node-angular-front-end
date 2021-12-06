@@ -37,7 +37,7 @@ spec:
       #- name: init-container
         #image: hub.docker.local:5000/alpine-jre-8:latest
         #command: ["java", "-version"]
-      #containers:
+      containers:
       - name: spring-node-angular-jwt
         image: hub.docker.local:5000/spring/spring-node-angular-jwt:latest
 
