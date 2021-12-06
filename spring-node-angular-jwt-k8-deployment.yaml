@@ -40,6 +40,8 @@ spec:
       containers:
       - name: spring-node-angular-jwt
         image: hub.docker.local:5000/spring/spring-node-angular-jwt:latest
+        command: ["ng"]
+        args: ["serve", "--port", "80", "--host", "0.0.0.0"]
 
         imagePullPolicy: "Always"
         ports:
