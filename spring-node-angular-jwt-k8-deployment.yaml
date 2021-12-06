@@ -1,0 +1,78 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: spring-node-angular-jwt
+  name: spring-node-angular-jwt
+spec:
+  ports:
+  - protocol: TCP
+    name: "80"
+    port: 80
+    targetPort: 80
+  selector:
+    app: spring-node-angular-jwt
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: spring-node-angular-jwt
+  name: spring-node-angular-jwt
+spec:
+  selector:
+    matchLabels:
+      app: spring-node-angular-jwt
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: spring-node-angular-jwt
+    spec:
+      initContainers:
+      - name: init-container
+        image: hub.docker.local:5000/alpine-jre-8:latest
+        command: ["java", "-version"]
+      containers:
+      - name: spring-boot-jwt
+        image: hub.docker.local:5000/spring/spring-boot-jwt:0.0.5
+
+        #livenessProbe:
+          #httpGet:
+            #path: /app/actuator
+            #port: 80
+            #httpHeaders:
+            #- name: Content-Type
+              #value: plain/text
+          #failureThreshold: 10
+          #initialDelaySeconds: 10
+          #periodSeconds: 10
+        #readinessProbe:
+          #httpGet:
+            #path: /app/actuator
+            #port: 80
+          #failureThreshold: 10
+          #initialDelaySeconds: 10
+          #periodSeconds: 10
+        #startupProbe:
+          #tcpSocket:
+            #port: 80
+          #initialDelaySeconds: 30
+          #periodSeconds: 10
+
+        imagePullPolicy: "Always"
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: "1"
+            memory: "1073741824"
+          requests:
+            cpu: 250m
+            memory: "536870912"
+      restartPolicy: Always
+status: {}
