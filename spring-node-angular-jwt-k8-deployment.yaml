@@ -41,29 +41,6 @@ spec:
       - name: spring-boot-jwt
         image: hub.docker.local:5000/spring/spring-node-angular-jwt:latest
 
-        #livenessProbe:
-          #httpGet:
-            #path: /app/actuator
-            #port: 80
-            #httpHeaders:
-            #- name: Content-Type
-              #value: plain/text
-          #failureThreshold: 10
-          #initialDelaySeconds: 10
-          #periodSeconds: 10
-        #readinessProbe:
-          #httpGet:
-            #path: /app/actuator
-            #port: 80
-          #failureThreshold: 10
-          #initialDelaySeconds: 10
-          #periodSeconds: 10
-        #startupProbe:
-          #tcpSocket:
-            #port: 80
-          #initialDelaySeconds: 30
-          #periodSeconds: 10
-
         imagePullPolicy: "Always"
         ports:
         - containerPort: 80
