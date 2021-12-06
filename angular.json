@@ -71,7 +71,8 @@
               "browserTarget": "nodeangfe:build:production"
             },
             "development": {
-              "browserTarget": "nodeangfe:build:development"
+              "browserTarget": "nodeangfe:build:development",
+              "disableHostCheck": "true"
             }
           },
           "defaultConfiguration": "development"
