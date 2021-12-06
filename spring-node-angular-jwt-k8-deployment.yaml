@@ -33,11 +33,11 @@ spec:
       labels:
         app: spring-node-angular-jwt
     spec:
-      initContainers:
-      - name: init-container
-        image: hub.docker.local:5000/alpine-jre-8:latest
-        command: ["java", "-version"]
-      containers:
+      #initContainers:
+      #- name: init-container
+        #image: hub.docker.local:5000/alpine-jre-8:latest
+        #command: ["java", "-version"]
+      #containers:
       - name: spring-boot-jwt
         image: hub.docker.local:5000/spring/spring-boot-jwt:0.0.5
 
