@@ -25,3 +25,48 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+
+
+
+
+https://codeburst.io/setup-sonarqube-for-angular-application-locally-in-three-easy-steps-8f31e339ac19
+npm install -g sonar-scanner --save-dev
+sonar-project.properties:
+sonar.host.url=http://localhost:9000 
+sonar.login=admin
+sonar.password=admin
+sonar.projectKey=my-angular-app
+sonar.sourceEncoding=UTF-8
+sonar.sources=src
+sonar.tests=src
+sonar.exclusions=**/node_modules/**
+sonar.test.inclusions=**/*.spec.ts
+sonar.typescript.lcov.reportPaths=coverage/lcov.info
+sonar.testExecutionReportPaths=reports/ut_report.xml
+
+npm install karma-sonarqube-unit-reporter --save-dev
+karma.conf.js:
+plugins: [
+      require('karma-sonarqube-unit-reporter')
+    ],
+    sonarQubeUnitReporter: {
+      sonarQubeVersion: 'LATEST',
+      outputFile: 'reports/ut_report.xml',
+      overrideTestDescription: true,
+      testPaths: ['./src'],
+      testFilePattern: '.spec.ts',
+      useBrowserName: false
+    },
+    reporters: ['sonarqubeUnit'],
+
+package.json:
+"scripts": {
+"sonar":"sonar-scanner"
+}
+ng test --code-coverage --watch=false
+npm run sonar
+
+https://help.sonatype.com/repomanager2/node-packaged-modules-and-npm-registries
+package.json:
+"private": false,
+npm publish --registry http://localhost:8081/repository/mynpmrepo/
