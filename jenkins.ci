@@ -1,0 +1,84 @@
+
+pipeline {
+    agent any 
+    stages {
+
+        stage('SCM Preparation') {
+            steps {
+                echo "BranchName: ${branchName}"
+                echo "Code Update Started"
+                git branch: "${branchName}", url: 'https://github.com/siddhivinayak-sk/node-angular-front-end.git'
+                echo "Code Update End"
+            }
+        }
+        
+        stage('Dependency Resolution') {
+            steps {
+                echo "Dependency Resolution Started"
+                bat(/npm install/)
+                bat(/npm install sonar-scanner --save-dev/)
+                bat(/npm install karma-sonarqube-unit-reporter --save-dev/)
+                echo "Dependency Resolution End"
+            }
+        }
+
+        stage('Compile & Build') {
+            steps {
+                echo "Code Compilation Started"
+                bat(/npm build/)
+                echo "Code Compilation End"
+            }
+        }
+        
+        stage('Test') {
+            steps {
+                echo "Test Started"
+                bat(/ng test --code-coverage --watch=false/)
+                echo "Test End"
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                echo "SonarQube Started"
+                withSonarQubeEnv('localSonarQube') {
+                    bat(/npm run sonar/)
+                }
+                echo "SonarQube End"
+            }
+        }
+
+        stage('Artifact Publish') {
+            steps {
+                echo "Artifact Publish to Nexus Started"
+                bat(/npm publish --registry http:\/\/www.mynexus.com:8081\/repository\/mynpmrepo\//)
+                echo "Artifact Publish to Nexus Started"
+            }
+        }
+        
+        stage('Build Image') {
+            steps {
+                echo "Build Image Started"
+                bat(/docker build -f Dockerfile -t spring\/spring-node-angular-jwt:${tagName} ./)
+                echo "Build Image Started"
+            }
+        }
+        
+        stage('Tag Image') {
+            steps {
+                echo "Tag Image Started"
+                bat(/docker tag spring\/spring-node-angular-jwt:${tagName} hub.docker.local:5000\/spring\/spring-node-angular-jwt:${tagName}/)
+                echo "Tag Image Started"
+            }
+        }
+
+        stage('Push Image') {
+            steps {
+                echo "Push Image Started"
+                bat(/docker push hub.docker.local:5000\/spring\/spring-node-angular-jwt:${tagName}/)
+                echo "Push Image Started"
+            }
+        }
+
+    }
+}
