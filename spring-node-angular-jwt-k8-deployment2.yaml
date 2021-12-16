@@ -1,0 +1,87 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: spring-node-angular-jwt
+  name: spring-node-angular-jwt
+spec:
+  ports:
+  - protocol: TCP
+    name: "80"
+    port: 80
+    targetPort: 80
+  selector:
+    app: spring-node-angular-jwt
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: spring-node-angular-jwt
+  name: spring-node-angular-jwt
+spec:
+  selector:
+    matchLabels:
+      app: spring-node-angular-jwt
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: spring-node-angular-jwt
+    spec:
+      initContainers:
+      - name: init-container
+        image: byrnedo/alpine-curl
+        command:
+        - sh
+        - -c
+        - 'while true ; do curl -s curl http://spring-boot-jwt:80/app/actuator/info -m 3 | grep -i \{\} | grep -iv red > /dev/null ; if [ `echo $?` -eq 0 ] ; then exit 0; fi; echo "Waiting for BE to come up..." ; sleep 20 ; sleep 20 ; done '
+      containers:
+      - name: spring-node-angular-jwt
+        image: localhost:5000/spring/spring-node-angular-jwt:latest
+        command: ["ng"]
+        args: ["serve", "--port", "80", "--host", "0.0.0.0", "--disable-host-check"]
+
+        imagePullPolicy: "Always"
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: "1"
+            memory: "1073741824"
+          requests:
+            cpu: 250m
+            memory: "536870912"
+      restartPolicy: Always
+status: {}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: spring-boot-jwt-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - host: www.mybank.com
+    http:
+      paths:
+      - path: /app
+        pathType: Prefix
+        backend:
+          service:
+            name: spring-boot-jwt
+            port:
+              number: 80
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: spring-node-angular-jwt
+            port:
+              number: 80
+
