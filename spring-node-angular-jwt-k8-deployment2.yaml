@@ -84,4 +84,20 @@ spec:
             name: spring-node-angular-jwt
             port:
               number: 80
+  - http:
+      paths:
+      - path: /app
+        pathType: Prefix
+        backend:
+          service:
+            name: spring-boot-jwt
+            port:
+              number: 80
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: spring-node-angular-jwt
+            port:
+              number: 80
 
