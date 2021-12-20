@@ -1,0 +1,48 @@
+﻿import { Component, OnInit } from '@angular/core';
+import { finalize, first } from 'rxjs/operators';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+
+import { User } from '../_models';
+import { UserService, AuthenticationService } from '../_services';
+import { environment } from './../../environments/environment';
+
+@Component({ templateUrl: 'home.component.html' })
+export class HomeComponent implements OnInit {
+    currentUser: User;
+    users = [];
+    welcomMessage: string;
+
+    constructor(
+        private authenticationService: AuthenticationService,
+        private userService: UserService, private http: HttpClient
+    ) {
+        this.currentUser = this.authenticationService.currentUserValue;
+    }
+
+    ngOnInit() {
+        this.getHelloMessage();
+        // this.loadAllUsers();
+    }
+
+    getHelloMessage(){
+        let head = new HttpHeaders({
+          "Authorization": "Bearer;" + window.sessionStorage.getItem("userToken"),
+          "Access-Control-Allow-Origin": "*"
+        })
+        this.http.get<any>(environment.backendServiceUrl + '/hello').subscribe( respone => {
+            this.welcomMessage = respone;
+        })
+    }
+
+    deleteUser(id: number) {
+        this.userService.delete(id)
+            .pipe(first())
+            .subscribe(() => this.loadAllUsers());
+    }
+
+    private loadAllUsers() {
+        this.userService.getAll()
+            .pipe(first())
+            .subscribe(users => this.users = users);
+    }
+}
