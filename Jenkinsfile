@@ -3,15 +3,6 @@ pipeline {
     agent {label 'Ubuntu'}
     stages {
 
-        stage('SCM Preparation') {
-            steps {
-                echo "BranchName: ${branchName}"
-                echo "Code Update Started"
-                git branch: "${branchName}", url: 'https://github.com/siddhivinayak-sk/node-angular-front-end.git'
-                echo "Code Update End"
-            }
-        }
-        
         stage('Dependency Resolution') {
             steps {
                 echo "Dependency Resolution Started"
