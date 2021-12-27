@@ -1,4 +1,3 @@
-
 pipeline {
     agent {label 'Ubuntu'}
     stages {
@@ -24,7 +23,9 @@ pipeline {
         stage('Test') {
             steps {
                 echo "Test Started"
-                sh(/ng test --code-coverage --watch=false/)
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    sh(/ng test --code-coverage --watch=false/)
+                }
                 echo "Test End"
             }
         }
@@ -43,66 +44,39 @@ pipeline {
             steps {
                 echo "Artifact Publish to Nexus Started"
                 sh(/npm publish --registry http:\/\/www.mynexus.com:8081\/repository\/mynpmrepo\//)
-                echo "Artifact Publish to Nexus Started"
+                echo "Artifact Publish to Nexus End"
             }
         }
         
         stage('Build Image') {
             steps {
                 echo "Build Image Started"
-                sh(/docker build -f Dockerfile -t spring\/spring-node-angular-jwt:latest ./)
-                echo "Build Image Started"
+                sh(/docker build -f Dockerfile -t spring\/spring-node-angular-jwt:${tagName} ./)
+                echo "Build Image End"
             }
         }
         
+        stage('Scan Image') {
+            steps {
+                echo "Scan Image Started"
+                sh(/docker scan --file Dockerfile --json spring\/spring-node-angular-jwt:${tagName} > spring-spring-node-angular-jwt_${tagName}.json/)
+                echo "Scan Image End"
+            }
+        }
+
         stage('Tag Image') {
             steps {
                 echo "Tag Image Started"
-                sh(/docker tag spring\/spring-node-angular-jwt:latest hub.docker.local:5000\/spring\/spring-node-angular-jwt:latest/)
-                echo "Tag Image Started"
+                sh(/docker tag spring\/spring-node-angular-jwt:${tagName} hub.docker.local:5000\/spring\/spring-node-angular-jwt:${tagName}/)
+                echo "Tag Image End"
             }
         }
 
         stage('Push Image') {
             steps {
                 echo "Push Image Started"
-                sh(/docker push hub.docker.local:5000\/spring\/spring-node-angular-jwt:latest/)
-                echo "Push Image Started"
-            }
-        }
-      
-        stage('Status Before Deployment') {
-            steps {
-                echo "Undeploying older service"
-                sh(/minikube kubectl -- -n bank-apps get all/)
-                echo "Undeployed"
-            }
-        }
-
-        stage('Clean Up') {
-            steps {
-                echo "Undeploying older service"
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    sh(/minikube kubectl -- -n bank-apps delete -f spring-node-angular-jwt-k8-deployment2.yaml /)
-                }
-                echo "Undeployed"
-            }
-        }
-
-        
-        stage('Deployment') {
-            steps {
-                echo "Deployment Started"
-                sh(/minikube kubectl -- -n bank-apps create -f spring-node-angular-jwt-k8-deployment2.yaml/)
-                echo "Deployment End"
-            }
-        }
-
-        stage('Status') {
-            steps {
-                echo "Status Started"
-                sh(/minikube kubectl -- -n bank-apps get all/)
-                echo "Status End"
+                sh(/docker push hub.docker.local:5000\/spring\/spring-node-angular-jwt:${tagName}/)
+                echo "Push Image End"
             }
         }
 
