@@ -51,7 +51,7 @@ pipeline {
         stage('Build Image') {
             steps {
                 echo "Build Image Started"
-                sh(/docker build -f Dockerfile -t spring\/spring-node-angular-jwt:${tagName} ./)
+                sh(/docker build -f Dockerfile -t spring\/spring-node-angular-jwt:latest ./)
                 echo "Build Image End"
             }
         }
@@ -59,7 +59,7 @@ pipeline {
         stage('Scan Image') {
             steps {
                 echo "Scan Image Started"
-                sh(/docker scan --file Dockerfile --json spring\/spring-node-angular-jwt:${tagName} > spring-spring-node-angular-jwt_${tagName}.json/)
+                sh(/docker scan --file Dockerfile --json spring\/spring-node-angular-jwt:latest > spring-spring-node-angular-jwt_latest.json/)
                 echo "Scan Image End"
             }
         }
@@ -67,7 +67,7 @@ pipeline {
         stage('Tag Image') {
             steps {
                 echo "Tag Image Started"
-                sh(/docker tag spring\/spring-node-angular-jwt:${tagName} hub.docker.local:5000\/spring\/spring-node-angular-jwt:${tagName}/)
+                sh(/docker tag spring\/spring-node-angular-jwt:latest hub.docker.local:5000\/spring\/spring-node-angular-jwt:latest/)
                 echo "Tag Image End"
             }
         }
@@ -75,7 +75,7 @@ pipeline {
         stage('Push Image') {
             steps {
                 echo "Push Image Started"
-                sh(/docker push hub.docker.local:5000\/spring\/spring-node-angular-jwt:${tagName}/)
+                sh(/docker push hub.docker.local:5000\/spring\/spring-node-angular-jwt:latest/)
                 echo "Push Image End"
             }
         }
