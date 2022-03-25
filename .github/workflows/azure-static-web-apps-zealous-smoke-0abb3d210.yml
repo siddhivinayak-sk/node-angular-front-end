@@ -10,6 +10,14 @@ on:
       - main
 
 jobs:
+  before_verify_job:
+    runs-on: ubuntu-latest
+    name: Before Verify Job 
+    steps:
+      - name: Verify directory
+        id: verify
+        run: ls
+        
   build_and_deploy_job:
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
