@@ -42,6 +42,7 @@ jobs:
           output_location: "dist/" # Built app content directory - optional
       - name: After Verify directory
         id: after_verify
+        if: always()
         run: ls
 
   after_verify_job:
