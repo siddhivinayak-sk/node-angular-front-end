@@ -29,6 +29,9 @@ jobs:
       - name: Before Verify directory
         id: before_verify
         run: ls
+      - name: Install
+        id: install
+        run: sudo apt-get install tree
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
@@ -46,7 +49,7 @@ jobs:
         run: |
           ls
           echo "Dist directory"
-          ls dist
+          tree dist
 
   after_verify_job:
     runs-on: ubuntu-latest
