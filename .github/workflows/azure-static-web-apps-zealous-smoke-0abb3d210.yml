@@ -43,7 +43,10 @@ jobs:
       - name: After Verify directory
         id: after_verify
         if: always()
-        run: ls
+        run: |
+          ls
+          echo "Dist directory"
+          ls dist
 
   after_verify_job:
     runs-on: ubuntu-latest
